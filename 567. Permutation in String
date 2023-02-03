@@ -1,0 +1,102 @@
+# 567. Permutation in String (Medium)
+
+# Given two strings s1 and s2, return true if s2 contains a permutation of s1, or false otherwise.
+# In other words, return true if one of s1's permutations is the substring of s2.
+
+# Hash Table, Two Pointers, String, Sliding Window
+
+# INITIAL VERSION
+# Time Complexity O(n1 + n2 * (3?))
+
+# Runtime 287 ms Beats 33.68%  Memory 13.6 MB Beats 97.58%
+
+class Solution(object):
+    def checkInclusion(self, s1, s2):
+        """
+        :type s1: str
+        :type s2: str
+        :rtype: bool
+        """
+
+        sl = []
+
+        for c in s1:
+            sl.append(c)
+
+        tmp = sl[:]
+        sub = []
+
+
+        for i, c in enumerate(s2):
+
+            if tmp == []:
+                return True
+            elif c not in sl:
+                tmp = sl[:]
+                sub = []
+            elif c in tmp:
+                tmp.remove(c)
+                sub.append(c)
+            elif c not in tmp and c in sl:
+                
+                tmp += sub[:sub.index(c)]
+                sub = sub[sub.index(c) + 1:]
+                sub.append(c)
+
+
+        if tmp == [] :
+            return True
+        else:
+            return False
+            
+            
+ # MORE ELEGANT SOLUTION
+ 
+ class Solution(object):
+    def checkInclusion(self, s1, s2):
+        """
+        :type s1: str
+        :type s2: str
+        :rtype: bool
+        """
+
+
+        d1 = {}
+
+        for c in s1:
+            if c not in d1.keys():
+                d1[c] = 1
+            else:
+                d1[c] += 1
+
+        k = len(s1)
+        d2 = {}
+
+        for c in s2[:k]:
+            if c not in d2.keys():
+                d2[c] = 1
+            else:
+                d2[c] += 1
+
+        if d1 == d2:
+            return True
+
+
+        for i in range(len(s2) - k):
+            
+            # remove s2[i]
+            if d2[s2[i]] == 1:
+                del d2[s2[i]]
+            else:
+                d2[s2[i]]-=1
+
+            # add s2[i+k]
+            if s2[i+k] not in d2.keys():
+                d2[s2[i+k]] = 1
+            else:
+                d2[s2[i+k]] +=1 
+            
+            if d1 == d2:
+                return True
+        
+        return False
