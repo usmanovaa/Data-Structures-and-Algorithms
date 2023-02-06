@@ -1,0 +1,101 @@
+# 994. Rotting Oranges
+
+# You are given an m x n grid where each cell can have one of three values:
+# 0 representing an empty cell,
+# 1 representing a fresh orange, or
+# 2 representing a rotten orange.
+# Every minute, any fresh orange that is 4-directionally adjacent to a rotten orange becomes rotten.
+# Return the minimum number of minutes that must elapse until no cell has a fresh orange. If this is impossible, return -1.
+
+# INITIAL VERSION
+# O(n*k)
+# Runtime 32 ms Beats 85.12% Memory 13.5 MB Beats 53.38%
+
+class Solution(object):
+    def orangesRotting(self, grid):
+        """
+        :type grid: List[List[int]]
+        :rtype: int
+        """
+        rotten = set()
+        fresh = set()
+
+        # to find rotten oranges
+        for i in range(len(grid)):
+            for j in range(len(grid[0])):
+                if grid[i][j] == 2:
+                    rotten.add((i,j))
+                if grid[i][j] == 1:
+                    fresh.add((i,j))
+
+        if len(fresh) == 0:
+            return 0
+
+        # to spoil oranges around
+        def spoil(i,j):
+            if i-1 >= 0 and (i-1,j) in fresh:
+                rotten.add((i-1,j))
+                fresh.remove((i-1,j))
+            if j-1 >= 0 and (i,j-1) in fresh:
+                rotten.add((i,j-1))
+                fresh.remove((i,j-1))
+            if i+1 < len(grid) and (i+1,j) in fresh:
+                rotten.add((i+1,j))
+                fresh.remove((i+1,j))
+            if j+1 < len(grid[0]) and (i,j+1) in fresh:
+                rotten.add((i,j+1))
+                fresh.remove((i,j+1))
+                ind = 1
+
+        # to simulate each minute
+        rotten_now = rotten.copy()
+        rotten = set()
+        k = 0
+
+        while rotten_now:
+            
+            for i,j in rotten_now:
+                spoil(i,j)
+            k+=1
+            if len(fresh) == 0:
+                return k
+            else:
+                rotten_now = rotten.copy()
+                rotten = set()
+                
+        return -1
+
+# MORE ELEGANT SOLUTION
+
+class Solution(object):
+    def orangesRotting(self, grid):
+        """
+        :type grid: List[List[int]]
+        :rtype: int
+        """
+        rotten_now = deque()
+        fresh = set()
+
+        # to find rotten oranges
+        for i in range(len(grid)):
+            for j in range(len(grid[0])):
+                if grid[i][j] == 2:
+                    rotten_now.append((i,j))
+                if grid[i][j] == 1:
+                    fresh.add((i,j))
+
+        result = 0
+
+        while rotten_now and fresh:
+            
+            for _ in range(len(rotten_now)):
+                i, j = rotten_now.popleft()
+                for coord in [(i-1,j), (i+1,j), (i, j-1), (i,j+1)]:
+                    if coord in fresh:
+                        fresh.remove(coord)
+                        rotten_now.append(coord)
+            result +=1 
+        
+        return -1 if fresh else result
+        
+        
