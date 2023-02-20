@@ -1,0 +1,58 @@
+# 2418. Sort the People
+# You are given an array of strings names, and an array heights that consists of distinct positive integers. Both arrays are of length n.
+# For each index i, names[i] and heights[i] denote the name and height of the ith person.
+# Return names sorted in descending order by the people's heights.
+
+# Input: names = ["Mary","John","Emma"], heights = [180,165,170]
+# Output: ["Mary","Emma","John"]
+# Explanation: Mary is the tallest, followed by Emma and John.
+
+
+
+# INITIAL VERSION, O(n*logn), based on QuickSort
+# Runtime 117 ms Beats 42.86% Memory 13.9 MB Beats 96.43%
+
+
+class Solution(object):
+    def sortPeople(self, names, heights):
+        """
+        :type names: List[str]
+        :type heights: List[int]
+        :rtype: List[str]
+        """
+
+        # quick sort
+        
+        hname = {}
+
+        for i,h in enumerate(heights):
+            hname[h] = names[i]
+
+        def findpivot(array, low, high):
+            pivot = array[high]
+            second = low - 1
+
+            for i in range(low, high):
+                if array[i] <= pivot:
+                    second +=1
+
+                    array[i], array[second] = array[second], array[i]
+            
+            array[second+1], array[high] = array[high], array[second+1]
+
+            return second + 1
+
+
+        def quicksort(array, low, high):
+            if low < high:
+
+                pivot = findpivot(array, low, high)
+
+                quicksort(array, low, pivot - 1)
+                quicksort(array, pivot+1, high)
+
+
+        quicksort(heights, 0, len(heights) - 1)
+
+
+        return [hname[h] for h in reversed(heights)]
